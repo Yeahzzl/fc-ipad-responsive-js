@@ -16,6 +16,7 @@ basketStarterEl.addEventListener("click", function (event) {
     showBasket();
   }
 });
+// 이벤트버블링 방지
 basketEl.addEventListener("click", function (event) {
   event.stopPropagation();
 });
@@ -46,7 +47,6 @@ function showSearch() {
   setTimeout(function () {
     searchInputEl.focus();
   }, 600);
-  searchInputEl.value = "";
 }
 function hideSearch() {
   headerEl.classList.remove("searching");
@@ -58,8 +58,24 @@ function hideSearch() {
     el.style.transitionDelay = (index * 0.4) / searchDelayEl.length + "s";
   });
   searchDelayEl.reverse();
+  searchInputEl.value = "";
 }
 
 searchStarterEl.addEventListener("click", showSearch);
 searchCloserEl.addEventListener("click", hideSearch);
 searchShadowEl.addEventListener("click", hideSearch);
+
+// 요소의 가시성 관찰
+const io = new IntersectionObserver(function (entries) {
+  entries.forEach(function (entry) {
+    if (!entry.isIntersecting) {
+      return;
+    }
+    entry.target.classList.add("show");
+  });
+});
+
+const infoEls = document.querySelectorAll(".info");
+infoEls.forEach(function (el) {
+  io.observe(el);
+});
