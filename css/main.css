@@ -22,7 +22,7 @@ body {
   font-size: 16px;
   line-height: 1;
   font-family: "Roboto", "Noto Sans KR", sans-serif;
-  /* 한글 적용시 단어 단위로 줄바꿈 처리해주는 속성 */
+  /* 한글 적용시 단어 단위로 줄바꿈 처리해주는 속성` */
   word-break: keep-all;
   color: var(--color-font);
 }
