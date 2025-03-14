@@ -40,7 +40,7 @@ const searchDelayEl = [...searchWrapEl.querySelectorAll("li")];
 
 function showSearch() {
   headerEl.classList.add("searching");
-  document.documentElement.classList.add("fixed");
+  stopScroll();
   headerMenuEls.reverse().forEach(function (el, index) {
     el.style.transitionDelay = (index * 0.4) / headerMenuEls.length + "s";
   });
@@ -53,7 +53,7 @@ function showSearch() {
 }
 function hideSearch() {
   headerEl.classList.remove("searching");
-  document.documentElement.classList.remove("fixed");
+  playScroll();
   headerMenuEls.reverse().forEach(function (el, index) {
     el.style.transitionDelay = (index * 0.4) / headerMenuEls.length + "s";
   });
@@ -64,9 +64,76 @@ function hideSearch() {
   searchInputEl.value = "";
 }
 
+function playScroll() {
+  document.documentElement.classList.remove("fixed");
+}
+function stopScroll() {
+  document.documentElement.classList.add("fixed");
+}
+
 searchStarterEl.addEventListener("click", showSearch);
-searchCloserEl.addEventListener("click", hideSearch);
+searchCloserEl.addEventListener("click", function (event) {
+  event.stopPropagation();
+  hideSearch();
+});
 searchShadowEl.addEventListener("click", hideSearch);
+
+// 헤더 메뉴 토글!
+const menuStarterEl = document.querySelector("header .menu-starter");
+menuStarterEl.addEventListener("click", function () {
+  if (headerEl.classList.contains("menuing")) {
+    headerEl.classList.remove("menuing");
+    searchInputEl.value = "";
+
+    playScroll();
+  } else {
+    headerEl.classList.add("menuing");
+    stopScroll();
+  }
+});
+
+// 헤더 검색
+const searchTextFieldEL = document.querySelector("header .textfield");
+const searchCancelEL = document.querySelector("header .search-canceler");
+searchTextFieldEL.addEventListener("click", function () {
+  headerEl.classList.add("searching--mobile");
+  searchInputEl.focus();
+});
+searchCancelEL.addEventListener("click", function () {
+  headerEl.classList.remove("searching--mobile");
+});
+
+// PC모드에서 검색창을 열고 모바일 모드로 전환할 때 발생하는 문제
+window.addEventListener("resize", function () {
+  if (window.innerWidth <= 740) {
+    headerEl.classList.remove("searching");
+  } else {
+    headerEl.classList.remove("searching--mobile");
+  }
+});
+
+// 네비게이션 모바일버전 클래스
+const navEl = document.querySelector("nav");
+const navMenuToggleEl = navEl.querySelector(".menu-toggler");
+const navMenuShadowEl = navEl.querySelector(".shadow");
+navMenuToggleEl.addEventListener("click", function () {
+  if (navEl.classList.contains("menuing")) {
+    hideNavMenu();
+  } else {
+    showNavMenu();
+  }
+});
+navEl.addEventListener("click", function (event) {
+  event.stopPropagation();
+});
+navMenuShadowEl.addEventListener("click", hideNavMenu);
+window.addEventListener("click", hideNavMenu);
+function showNavMenu() {
+  navEl.classList.add("menuing");
+}
+function hideNavMenu() {
+  navEl.classList.remove("menuing");
+}
 
 // 요소의 가시성 관찰
 const io = new IntersectionObserver(function (entries) {
@@ -133,7 +200,6 @@ const navigationsEl = document.querySelector("footer .navigations");
 navigations.forEach(function (nav) {
   const mapEl = document.createElement("div");
   mapEl.classList.add("map");
-  console.log("nav", nav.title);
 
   let mapList = "";
   nav.maps.forEach(function (map) {
